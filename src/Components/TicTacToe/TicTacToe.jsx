@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'/*error to note: never add the useState*/
+import React, { useState, useRef, useEffect } from 'react'/*error to note: never add the useState*/
 import './TicTacToe.css' 
 import circle_icon from '../Assets/circle.png'
 import cross_icon from '../Assets/cross.png'
@@ -22,20 +22,23 @@ const TicTacToe = () => {
 
     let box_array=[box1,box2,box3,box4,box5,box6,box7,box8,box9];
 
+    useEffect(() => {
+        checkWin();
+    }, [count]);
+    
+
     const toggle = (e,num) => {
-        if(lock){ 
-            return 0;
-        }
-        if(count%2===0){
+        if (lock || data[num] !== "") return;
+
+        if(count%2===0){ //check if even number. is the turn is on even number, then play a cross
             e.target.innerHTML = `<img src ='${cross_icon}'>`;
             data[num]="x";
-            setCount(++count);
-        }else{
+        }else{// odd number turn will use circle
             e.target.innerHTML = `<img src ='${circle_icon}'>`;
             data[num]="o";
-            setCount(++count);
         }
-        checkWin(); //check for win after each move
+        setCount(prev => prev + 1);
+        //checkWin(); //check for win after each move
     }
     const checkWin = () => {
         if(data[0]===data[1] && data[1] === data[2] && data[2]!==""){
@@ -54,6 +57,8 @@ const TicTacToe = () => {
             won(data[8]);
         }else if(data[2]===data[4] && data[4] === data[6] && data[6]!==""){
             won(data[6]);
+        }else if(count===9){
+            won(null);
         }
     }
 
@@ -61,8 +66,10 @@ const TicTacToe = () => {
         setLock(true);
         if(winner==="x"){
             titleRef.current.innerHTML = `Congrats! <img src='${cross_icon}'> wins`;
-        }else{
+        }else if(winner==="o"){
             titleRef.current.innerHTML = `Congrats! <img src='${circle_icon}'> wins`;
+        } else {
+            titleRef.current.innerHTML = `It's a Draw!`;
         }
     }
     
